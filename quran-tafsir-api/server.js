@@ -1,54 +1,80 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const pool = require('./db'); 
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors()); 
+app.use(cors());
 app.use(express.json());
 
-const dataPath = path.join(__dirname, 'tafsir.json');
-let tafsirData = [];
-try {
-    const rawData = fs.readFileSync(dataPath, 'utf-8');
-    tafsirData = JSON.parse(rawData);
-    console.log("Données Tafsir chargées avec succès.");
-} catch (error) {
-    console.error("Erreur lors du chargement du fichier JSON:", error);
-}
+app.get('/api/words', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 50;
+        const offset = (page - 1) * limit;
 
-app.get('/api/words', (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
+        const dataQuery = 'SELECT * FROM words ORDER BY id ASC LIMIT $1 OFFSET $2';
+        const { rows } = await pool.query(dataQuery, [limit, offset]);
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+        const countQuery = 'SELECT COUNT(*) FROM words';
+        const countResult = await pool.query(countQuery);
+        const total = parseInt(countResult.rows[0].count);
 
-    const results = tafsirData.slice(startIndex, endIndex);
-    res.json({
-        page: page,
-        limit: limit,
-        total: tafsirData.length,
-        data: results
-    });
+        res.json({
+            page,
+            limit,
+            total,
+            total_pages: Math.ceil(total / limit),
+            data: rows
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
 });
 
-app.get('/api/words/search', (req, res) => {
-    const query = req.query.q;
-    if (!query) {
-        return res.status(400).json({ error: "Veuillez fournir un terme de recherche avec ?q=..." });
+app.get('/api/words/search', async (req, res) => {
+    try {
+        const query = req.query.q;
+        if (!query) {
+            return res.status(400).json({ error: "Veuillez fournir un terme de recherche avec ?q=..." });
+        }
+
+        const searchQuery = `
+            SELECT * FROM words 
+            WHERE word ILIKE $1 OR tafsir ILIKE $1 
+            ORDER BY id ASC
+        `;
+        const { rows } = await pool.query(searchQuery, [`%${query}%`]);
+
+        res.json({
+            total_found: rows.length,
+            data: rows
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Erreur serveur" });
     }
+});
 
-    const results = tafsirData.filter(item => 
-        item.tafsir && item.tafsir.includes(query)
-    );
+app.get('/api/words/surah/:surah_number', async (req, res) => {
+    try {
+        const surah_number = parseInt(req.params.surah_number);
+        
+        const surahQuery = 'SELECT * FROM words WHERE surah_number = $1 ORDER BY id ASC';
+        const { rows } = await pool.query(surahQuery, [surah_number]);
 
-    res.json({
-        total_found: results.length,
-        data: results
-    });
+        res.json({
+            surah_number,
+            total_words: rows.length,
+            data: rows
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
 });
 
 app.listen(PORT, () => {
