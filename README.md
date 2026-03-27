@@ -1,95 +1,101 @@
-# API de Tafsir des Mots du Coran
+# Quran Words Tafsir API
 
-Ce projet fournit une API RESTful simple pour consulter et rechercher le tafsir (l'explication) des mots du Saint Coran.
+This project provides a simple RESTful API to consult and search the tafsir (explanation) of the words of the Holy Quran.
 
-## Fonctionnalités
+## Features
 
-*   Fournit une liste paginée de tous les mots et de leur tafsir.
-*   Permet la recherche en texte intégral dans les mots et leur tafsir.
-*   Filtre les mots par numéro de sourate.
-*   Utilise une base de données PostgreSQL pour un stockage efficace des données.
+*   Provides a paginated list of all words and their tafsir.
+*   Allows full-text search in words and their tafsir.
+*   Filters words by surah number.
+*   Uses a PostgreSQL database for efficient data storage.
 
-## Technologies utilisées
+## Technologies Used
 
 *   [Node.js](https://nodejs.org/)
-*   [Express.js](https://expressjs.com/fr/)
+*   [Express.js](https://expressjs.com/)
+*   [TypeScript](https://www.typescriptlang.org/)
 *   [PostgreSQL](https://www.postgresql.org/)
 *   [node-postgres (pg)](https://node-postgres.com/)
 
-## Prérequis
+## Prerequisites
 
-Avant de commencer, assurez-vous d'avoir les outils suivants installés sur votre machine :
-*   [Node.js](https://nodejs.org/) (version 14 ou supérieure)
-*   [npm](https://www.npmjs.com/) (généralement inclus avec Node.js)
+Before you begin, ensure you have the following tools installed on your machine:
+*   [Node.js](https://nodejs.org/) (version 14 or higher)
+*   [npm](https://www.npmjs.com/) (usually included with Node.js)
 *   [PostgreSQL](https://www.postgresql.org/download/)
 
 ## Installation
 
-1.  **Clonez le dépôt :**
+1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/votre-utilisateur/TafsirWordsAPI.git
+    git clone https://github.com/your-user/TafsirWordsAPI.git
     cd TafsirWordsAPI/quran-tafsir-api
     ```
 
-2.  **Installez les dépendances :**
+2.  **Install dependencies:**
     ```bash
     npm install
     ```
 
-3.  **Configurez la base de données PostgreSQL :**
-    *   Créez une nouvelle base de données. Par exemple, `tafsir_db`.
+3.  **Configure the PostgreSQL database:**
+    *   Create a new database. For example, `tafsir_db`.
 
-4.  **Configurez les variables d'environnement :**
-    *   Créez un fichier `.env` à la racine du dossier `quran-tafsir-api`.
-    *   Copiez le contenu ci-dessous dans votre fichier `.env` et remplacez les valeurs par vos propres informations de configuration de base de données.
+4.  **Configure environment variables:**
+    *   Create a `.env` file in the root of the `quran-tafsir-api` folder.
+    *   Copy the content below into your `.env` file and replace the values with your own database configuration information.
 
     ```env
     # .env.example
-    DB_USER=votre_utilisateur_postgres
+    DB_USER=your_postgres_user
     DB_HOST=localhost
     DB_DATABASE=tafsir_db
-    DB_PASSWORD=votre_mot_de_passe
+    DB_PASSWORD=your_password
     DB_PORT=5432
     
     PORT=3000
     ```
 
-## Importation des données
+## Data Import
 
-Après avoir configuré votre base de données, vous devez importer les données du fichier `tafsir.json`.
+After configuring your database, you need to import the data from the `tafsir.json` file.
+This project uses TypeScript, so you will need `ts-node` to run the import script. `ts-node` is included in the development dependencies, you can run it with `npx`.
 
-Exécutez le script d'importation :
+Run the import script:
 ```bash
-node importData.js
+npx ts-node importData.ts
 ```
-Ce script créera la table `words` et la remplira avec les données nécessaires.
+This script will create the `words` table and populate it with the necessary data.
 
-## Démarrage du serveur
+## Starting the server
 
-Une fois l'installation et l'importation des données terminées, vous pouvez démarrer le serveur :
+Once the installation and data import are complete, you can start the server using the script defined in `package.json`:
 
 ```bash
-node server.js
+npm start
+```
+For development with automatic reloading (using `nodemon`), you can use:
+```bash
+npm run dev
 ```
 
-L'API sera alors accessible à l'adresse `http://localhost:3000` (ou le port que vous avez spécifié dans le fichier `.env`).
+The API will then be accessible at `http://localhost:3000` (or the port you specified in the `.env` file).
 
-## Points d'API (Endpoints)
+## API Endpoints
 
 ### `GET /api/words`
 
-Récupère une liste paginée de tous les mots.
+Retrieves a paginated list of all words.
 
-*   **Paramètres de requête :**
-    *   `page` (optionnel) : Numéro de la page (par défaut : `1`).
-    *   `limit` (optionnel) : Nombre d'éléments par page (par défaut : `50`).
+*   **Query Parameters:**
+    *   `page` (optional): Page number (default: `1`).
+    *   `limit` (optional): Number of items per page (default: `50`).
 
-*   **Exemple de requête :**
+*   **Sample Request:**
     ```
     http://localhost:3000/api/words?page=2&limit=20
     ```
 
-*   **Exemple de réponse :**
+*   **Sample Response:**
     ```json
     {
         "page": 2,
@@ -113,17 +119,17 @@ Récupère une liste paginée de tous les mots.
 
 ### `GET /api/words/search`
 
-Recherche un terme dans les mots et leur tafsir.
+Searches for a term in the words and their tafsir.
 
-*   **Paramètres de requête :**
-    *   `q` (requis) : Le terme de recherche.
+*   **Query Parameters:**
+    *   `q` (required): The search term.
 
-*   **Exemple de requête :**
+*   **Sample Request:**
     ```
     http://localhost:3000/api/words/search?q=ربكم
     ```
 
-*   **Exemple de réponse :**
+*   **Sample Response:**
     ```json
     {
         "total_found": 5,
@@ -144,17 +150,17 @@ Recherche un terme dans les mots et leur tafsir.
 
 ### `GET /api/words/surah/:surah_number`
 
-Récupère tous les mots d'une sourate spécifique.
+Retrieves all the words of a specific surah.
 
-*   **Paramètres d'URL :**
-    *   `surah_number` (requis) : Le numéro de la sourate.
+*   **URL Parameters:**
+    *   `surah_number` (required): The surah number.
 
-*   **Exemple de requête :**
+*   **Sample Request:**
     ```
     http://localhost:3000/api/words/surah/2
     ```
 
-*   **Exemple de réponse :**
+*   **Sample Response:**
     ```json
     {
         "surah_number": 2,
