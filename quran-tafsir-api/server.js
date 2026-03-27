@@ -1,13 +1,16 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db'); 
-require('dotenv').config();
+const pool = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 app.get('/api/words', async (req, res) => {
     try {
