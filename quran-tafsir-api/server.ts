@@ -1,21 +1,22 @@
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-const express = require('express');
-const cors = require('cors');
-const pool = require('./db');
+import path from 'path';
+import dotenv from 'dotenv';
+dotenv.config({ path: path.join(__dirname, '.env') });
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import pool from './db';
 
-const app = express();
+const app: express.Application = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.get('/favicon.ico', (req: Request, res: Response) => res.status(204).end());
 
-app.get('/api/words', async (req, res) => {
+app.get('/api/words', async (req: Request, res: Response) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 50;
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 50;
         const offset = (page - 1) * limit;
 
         const dataQuery = 'SELECT * FROM words ORDER BY id ASC LIMIT $1 OFFSET $2';
@@ -32,15 +33,15 @@ app.get('/api/words', async (req, res) => {
             total_pages: Math.ceil(total / limit),
             data: rows
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error(err.message);
         res.status(500).json({ error: "Erreur serveur" });
     }
 });
 
-app.get('/api/words/search', async (req, res) => {
+app.get('/api/words/search', async (req: Request, res: Response) => {
     try {
-        const query = req.query.q;
+        const query = req.query.q as string;
         if (!query) {
             return res.status(400).json({ error: "Veuillez fournir un terme de recherche avec ?q=..." });
         }
@@ -56,13 +57,13 @@ app.get('/api/words/search', async (req, res) => {
             total_found: rows.length,
             data: rows
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error(err.message);
         res.status(500).json({ error: "Erreur serveur" });
     }
 });
 
-app.get('/api/words/surah/:surah_number', async (req, res) => {
+app.get('/api/words/surah/:surah_number', async (req: Request, res: Response) => {
     try {
         const surah_number = parseInt(req.params.surah_number);
         
@@ -74,7 +75,7 @@ app.get('/api/words/surah/:surah_number', async (req, res) => {
             total_words: rows.length,
             data: rows
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error(err.message);
         res.status(500).json({ error: "Erreur serveur" });
     }

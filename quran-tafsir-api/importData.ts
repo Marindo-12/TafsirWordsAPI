@@ -1,5 +1,14 @@
-const fs = require('fs');
-const pool = require('./db');
+import fs from 'fs';
+import pool from './db';
+
+interface TafsirItem {
+    page_number: number;
+    surah_number: number;
+    surah_name: string;
+    ayah_number: number;
+    word: string;
+    tafsir: string;
+}
 
 async function importData() {
     try {
@@ -18,7 +27,7 @@ async function importData() {
 
         console.log("Lecture du fichier tafsir.json...");
         const rawData = fs.readFileSync('tafsir.json', 'utf-8');
-        const tafsirData = JSON.parse(rawData);
+        const tafsirData: TafsirItem[] = JSON.parse(rawData);
 
         console.log(`Insertion de ${tafsirData.length} mots dans la base de données...`);
         for (const item of tafsirData) {
