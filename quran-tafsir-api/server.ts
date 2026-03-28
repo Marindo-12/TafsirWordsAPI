@@ -65,7 +65,7 @@ app.get('/api/words/search', async (req: Request, res: Response) => {
 
 app.get('/api/words/surah/:surah_number', async (req: Request, res: Response) => {
     try {
-        const surah_number = parseInt(req.params.surah_number);
+        const surah_number = parseInt(req.params.surah_number as string);
         
         const surahQuery = 'SELECT * FROM words WHERE surah_number = $1 ORDER BY id ASC';
         const { rows } = await pool.query(surahQuery, [surah_number]);
