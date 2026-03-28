@@ -62,7 +62,12 @@ This project uses TypeScript, so you will need `ts-node` to run the import scrip
 make sure to update this row in importData.ts to match the name of the json file you would transform to postgree data :
 
 ```bash
-const rawData = fs.readFileSync('FileName.json', 'utf-8');
+const rawData = fs.readFileSync('./JSON/FileName.json', 'utf-8');
+```
+
+Example : 
+```bash
+const rawData = fs.readFileSync('./JSON/tafsir_annisa.json', 'utf-8');
 ```
 
 or simply create a variable and update it to match the changes.
