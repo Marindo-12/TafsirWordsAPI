@@ -59,6 +59,13 @@ Before you begin, ensure you have the following tools installed on your machine:
 
 After configuring your database, you need to import the data from the `tafsir.json` file.
 This project uses TypeScript, so you will need `ts-node` to run the import script. `ts-node` is included in the development dependencies, you can run it with `npx`.
+make sure to update this row in importData.ts to match the name of the json file you would transform to postgree data :
+
+```bash
+const rawData = fs.readFileSync('FileName.json', 'utf-8');
+```
+
+or simply create a variable and update it to match the changes.
 
 Run the import script:
 ```bash
