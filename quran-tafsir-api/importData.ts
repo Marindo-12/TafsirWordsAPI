@@ -26,7 +26,7 @@ async function importData() {
         `);
 
         console.log("Lecture du fichier tafsir.json...");
-        const rawData = fs.readFileSync('./JSON/tafsir_anahl.json', 'utf-8');
+        const rawData = fs.readFileSync('./JSON/tafsir_alisra.json', 'utf-8');
         const tafsirData: TafsirItem[] = JSON.parse(rawData);
 
         console.log(`Insertion de ${tafsirData.length} mots dans la base de données...`);
