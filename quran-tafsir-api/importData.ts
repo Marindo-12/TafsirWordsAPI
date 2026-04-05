@@ -25,7 +25,7 @@ async function importData() {
             );
         `);
 
-        const filename = "tafsir_alshuaraa.json";
+        const filename = "tafsir_alnaml.json";
 
         console.log(`Lecture du fichier ${filename}...`);
         const rawData = fs.readFileSync(`./JSON/${filename}`, 'utf-8');
