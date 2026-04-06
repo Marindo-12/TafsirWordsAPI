@@ -25,7 +25,7 @@ async function importData() {
             );
         `);
 
-        const filename = "tafsir_luqman.json";
+        const filename = "tafsir_alsajda.json";
 
         console.log(`Lecture du fichier ${filename}...`);
         const rawData = fs.readFileSync(`./JSON/${filename}`, 'utf-8');
