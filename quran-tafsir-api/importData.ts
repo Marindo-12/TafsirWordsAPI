@@ -32,7 +32,7 @@ async function importData() {
             );
         `);
 
-        const NOM_FICHIER = 'tafsir_baquarah.json';
+        const NOM_FICHIER = 'tafsir_alimran.json';
         const jsonDir = './JSON/';
         const filePath = path.join(jsonDir, NOM_FICHIER);
         
